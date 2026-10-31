@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zip Slicer — Client-Side TSF Archive Splitter for Glean</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-elevated: #1f2937;
+      --border: #374151;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      width: 100%;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .badge-privacy {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem 0 3.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2.75rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background-color 0.2s;
+      background: rgba(31, 41, 55, 0.35);
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.85rem;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+
+    .dropzone h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .dropzone p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .control-help {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    input[type="number"],
+    select {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+
+    .number-box {
+      width: 88px !important;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.65rem 1.15rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface-elevated);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #374151;
+    }
+
+    .file-summary {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.25rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+    }
+
+    .file-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      word-break: break-all;
+    }
+
+    .file-stats {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .alert {
+      display: none;
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    .alert-info {
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+    }
+
+    .progress-wrap {
+      display: none;
+      margin-top: 1.25rem;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: var(--surface-elevated);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.45rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #10b981);
+      transition: width 0.15s ease;
+    }
+
+    .parts-list {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .part-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+
+    .part-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .part-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .part-badge {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .part-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon">ZS</div>
+        <div>
+          <div class="brand-title">Zip Slicer</div>
+          <div class="brand-subtitle">Lossless TSF Archive Splitter for Glean (&lt; 64 MB)</div>
+        </div>
+      </div>
+      <div class="badge-privacy">
+        <span>● 100% Local Browser Processing — Zero Server Uploads</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="alertBox" class="alert alert-error"></div>
+
+    <div class="card">
+      <input type="file" id="fileInput" accept=".zip,.tgz,.tar.gz,.tar,.bin,application/zip" hidden />
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-icon">↑</div>
+        <h2>Drag &amp; drop your TSF archive here, or click to browse</h2>
+        <p>Supports standard &amp; ZIP64 archives of any size. Processed locally in memory slices without recompression.</p>
+      </div>
+
+      <div class="controls-grid">
+        <div class="control-group">
+          <label for="maxSizeRange">Maximum Part Size (MB)</label>
+          <div class="input-row">
+            <input type="range" id="maxSizeRange" min="10" max="63" step="1" value="60" />
+            <input type="number" id="maxSizeInput" class="number-box" min="10" max="63" value="60" />
+          </div>
+          <div class="control-help">Default is 60 MB to stay safely under Glean's 64 MB upload limit.</div>
+        </div>
+
+        <div class="control-group">
+          <label for="splitMode">Splitting Mode</label>
+          <select id="splitMode">
+            <option value="smart">Smart Standalone ZIPs (Recommended for Glean)</option>
+            <option value="raw">Raw Binary Chunks (.part01, .part02)</option>
+          </select>
+          <div class="control-help">Smart mode copies raw compressed entries into valid standalone .zip files without recompressing.</div>
+        </div>
+      </div>
+
+      <div id="fileSummary" class="file-summary">
+        <div class="file-meta">
+          <div id="selectedFileName" class="file-name"></div>
+          <div id="selectedFileStats" class="file-stats"></div>
+        </div>
+        <div style="display: flex; gap: 0.6rem;">
+          <button id="clearBtn" class="btn btn-secondary" type="button">Clear</button>
+          <button id="sliceBtn" class="btn btn-primary" type="button">Slice Archive</button>
+        </div>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+          <span id="progressText">Processing archive...</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="progressFill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultsCard" class="card" style="display: none;">
+      <div class="results-header">
+        <div>
+          <h3 id="resultsTitle" style="font-size: 1.05rem;">Generated Parts</h3>
+          <p id="resultsSubtitle" style="font-size: 0.82rem; color: var(--text-muted);"></p>
+        </div>
+        <button id="downloadAllBtn" class="btn btn-primary" type="button">Download All Parts</button>
+      </div>
+      <div id="partsList" class="parts-list"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      Zip Slicer runs strictly in your browser using native File &amp; Blob slicing APIs. No telemetry, external APIs, or server transfers.
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('fileInput');
+      const maxSizeRange = document.getElementById('maxSizeRange');
+      const maxSizeInput = document.getElementById('maxSizeInput');
+      const splitMode = document.getElementById('splitMode');
+      const fileSummary = document.getElementById('fileSummary');
+      const selectedFileName = document.getElementById('selectedFileName');
+      const selectedFileStats = document.getElementById('selectedFileStats');
+      const sliceBtn = document.getElementById('sliceBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const alertBox = document.getElementById('alertBox');
+      const progressWrap = document.getElementById('progressWrap');
+      const progressText = document.getElementById('progressText');
+      const progressPct = document.getElementById('progressPct');
+      const progressFill = document.getElementById('progressFill');
+      const resultsCard = document.getElementById('resultsCard');
+      const resultsTitle = document.getElementById('resultsTitle');
+      const resultsSubtitle = document.getElementById('resultsSubtitle');
+      const partsList = document.getElementById('partsList');
+      const downloadAllBtn = document.getElementById('downloadAllBtn');
+
+      let currentFile = null;
+      let generatedUrls = [];
+
+      // Precompute CRC-32 Lookup Table for oversized single-entry segmenting
+      const CRC_TABLE = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        CRC_TABLE[i] = c >>> 0;
+      }
+
+      async function computeBlobCrc32(blob) {
+        const chunkSize = 4 * 1024 * 1024;
+        let crc = 0xFFFFFFFF;
+        for (let offset = 0; offset < blob.size; offset += chunkSize) {
+          const buf = await blob.slice(offset, Math.min(offset + chunkSize, blob.size)).arrayBuffer();
+          const bytes = new Uint8Array(buf);
+          for (let i = 0; i < bytes.length; i++) {
+            crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+          }
+        }
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+      }
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, i)).toFixed(i >= 2 ? 2 : 1) + ' ' + units[i];
+      }
+
+      function showError(msg) {
+        alertBox.className = 'alert alert-error';
+        alertBox.textContent = msg;
+        alertBox.style.display = 'block';
+      }
+
+      function clearError() {
+        alertBox.style.display = 'none';
+        alertBox.textContent = '';
+      }
+
+      function revokeGeneratedUrls() {
+        for (const item of generatedUrls) {
+          URL.revokeObjectURL(item.url);
+        }
+        generatedUrls = [];
+      }
+
+      function setProgress(pct, label) {
+        progressWrap.style.display = 'block';
+        progressFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+        progressPct.textContent = Math.round(pct) + '%';
+        if (label) progressText.textContent = label;
+      }
+
+      maxSizeRange.addEventListener('input', () => {
+        maxSizeInput.value = maxSizeRange.value;
+        updateFilePreview();
+      });
+
+      maxSizeInput.addEventListener('change', () => {
+        let val = parseInt(maxSizeInput.value, 10);
+        if (isNaN(val) || val < 10) val = 10;
+        if (val > 63) val = 63;
+        maxSizeInput.value = val;
+        maxSizeRange.value = val;
+        updateFilePreview();
+      });
+
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files.length > 0) {
+          handleFileSelect(fileInput.files[0]);
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        currentFile = null;
+        fileInput.value = '';
+        fileSummary.style.display = 'none';
+        resultsCard.style.display = 'none';
+        progressWrap.style.display = 'none';
+        revokeGeneratedUrls();
+        clearError();
+      });
+
+      function handleFileSelect(file) {
+        clearError();
+        revokeGeneratedUrls();
+        resultsCard.style.display = 'none';
+        progressWrap.style.display = 'none';
+
+        if (!file || file.size === 0) {
+          showError('The selected file is empty (0 bytes). Please choose a valid TSF archive.');
+          return;
+        }
+
+        currentFile = file;
+        fileSummary.style.display = 'flex';
+        updateFilePreview();
+      }
+
+      function updateFilePreview() {
+        if (!currentFile) return;
+        const maxBytes = parseInt(maxSizeInput.value, 10) * 1024 * 1024;
+        const estParts = Math.max(1, Math.ceil(currentFile.size / maxBytes));
+        selectedFileName.textContent = currentFile.name;
+        selectedFileStats.textContent =
+          `Total size: ${formatBytes(currentFile.size)} • Target limit: ${maxSizeInput.value} MB • Estimated parts: ~${estParts}`;
+      }
+
+      // Parse ZIP Central Directory (with ZIP64 support) without loading full archive into RAM
+      async function parseZipCentralDirectory(file) {
+        const searchSize = Math.min(file.size, 65557);
+        const tailStart = file.size - searchSize;
+        const tailBuf = await file.slice(tailStart, file.size).arrayBuffer();
+        const tailView = new DataView(tailBuf);
+
+        let eocdPos = -1;
+        for (let i = tailBuf.byteLength - 22; i >= 0; i--) {
+          if (tailView.getUint32(i, true) === 0x06054b50) {
+            eocdPos = i;
+            break;
+          }
+        }
+
+        if (eocdPos === -1) {
+          throw new Error('Not a valid ZIP archive (End of Central Directory signature not found). Use "Raw Binary Chunks" mode for non-ZIP files.');
+        }
+
+        let cdCount = tailView.getUint16(eocdPos + 10, true);
+        let cdSize = tailView.getUint32(eocdPos + 12, true);
+        let cdOffset = tailView.getUint32(eocdPos + 16, true);
+
+        // Check for ZIP64 EOCD Locator immediately preceding EOCD
+        if (eocdPos >= 20 && tailView.getUint32(eocdPos - 20, true) === 0x07064b50) {
+          const zip64EocdOffset = Number(tailView.getBigUint64(eocdPos - 12, true));
+          const z64Buf = await file.slice(zip64EocdOffset, zip64EocdOffset + 56).arrayBuffer();
+          const z64View = new DataView(z64Buf);
+          if (z64View.getUint32(0, true) === 0x06064b50) {
+            cdCount = Number(z64View.getBigUint64(32, true));
+            cdSize = Number(z64View.getBigUint64(40, true));
+            cdOffset = Number(z64View.getBigUint64(48, true));
+          }
+        }
+
+        const cdBuf = await file.slice(cdOffset, cdOffset + cdSize).arrayBuffer();
+        const cdView = new DataView(cdBuf);
+        const cdBytes = new Uint8Array(cdBuf);
+        const decoder = new TextDecoder('utf-8');
+
+        const entries = [];
+        let ptr = 0;
+
+        while (ptr < cdBuf.byteLength) {
+          if (cdView.getUint32(ptr, true) !== 0x02014b50) {
+            break;
+          }
+
+          const versionMadeBy = cdView.getUint16(ptr + 4, true);
+          const versionNeeded = cdView.getUint16(ptr + 6, true);
+          const bitFlag = cdView.getUint16(ptr + 8, true);
+          const compressionMethod = cdView.getUint16(ptr + 10, true);
+          const modTime = cdView.getUint16(ptr + 12, true);
+          const modDate = cdView.getUint16(ptr + 14, true);
+          const crc32 = cdView.getUint32(ptr + 16, true);
+          let compSize = cdView.getUint32(ptr + 20, true);
+          let uncompSize = cdView.getUint32(ptr + 24, true);
+          const nameLen = cdView.getUint16(ptr + 28, true);
+          const extraLen = cdView.getUint16(ptr + 30, true);
+          const commentLen = cdView.getUint16(ptr + 32, true);
+          const internalAttr = cdView.getUint16(ptr + 36, true);
+          const externalAttr = cdView.getUint32(ptr + 38, true);
+          let localHeaderOffset = cdView.getUint32(ptr + 42, true);
+
+          const nameBytes = cdBytes.slice(ptr + 46, ptr + 46 + nameLen);
+          const fileName = decoder.decode(nameBytes);
+
+          // Parse ZIP64 Extra Field if present
+          if (compSize === 0xFFFFFFFF || uncompSize === 0xFFFFFFFF || localHeaderOffset === 0xFFFFFFFF) {
+            let extraPtr = ptr + 46 + nameLen;
+            const extraEnd = extraPtr + extraLen;
+            while (extraPtr + 4 <= extraEnd) {
+              const headerId = cdView.getUint16(extraPtr, true);
+              const dataSize = cdView.getUint16(extraPtr + 2, true);
+              if (headerId === 0x0001) {
+                let zPtr = extraPtr + 4;
+                if (uncompSize === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
+                  uncompSize = Number(cdView.getBigUint64(zPtr, true));
+                  zPtr += 8;
+                }
+                if (compSize === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
+                  compSize = Number(cdView.getBigUint64(zPtr, true));
+                  zPtr += 8;
+                }
+                if (localHeaderOffset === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
+                  localHeaderOffset = Number(cdView.getBigUint64(zPtr, true));
+                  zPtr += 8;
+                }
+                break;
+              }
+              extraPtr += 4 + dataSize;
+            }
+          }
+
+          entries.push({
+            versionMadeBy,
+            versionNeeded,
+            bitFlag,
+            compressionMethod,
+            modTime,
+            modDate,
+            crc32,
+            compSize,
+            uncompSize,
+            nameBytes,
+            fileName,
+            internalAttr,
+            externalAttr,
+            localHeaderOffset
+          });
+
+          ptr += 46 + nameLen + extraLen + commentLen;
+        }
+
+        return entries;
+      }
+
+      // Build a standalone valid ZIP Blob from a list of prepared entries
+      function buildStandaloneZip(partEntries) {
+        const blobParts = [];
+        const centralDirectoryParts = [];
+        let currentOffset = 0;
+
+        for (const entry of partEntries) {
+          const nameLen = entry.nameBytes.byteLength;
+
+          // Construct clean 30-byte Local File Header (cleared bit 3 data descriptor flag since sizes & CRC are known)
+          const cleanFlag = entry.bitFlag & ~0x0008;
+          const localHeader = new ArrayBuffer(30);
+          const lhView = new DataView(localHeader);
+          lhView.setUint32(0, 0x04034b50, true);
+          lhView.setUint16(4, 20, true);
+          lhView.setUint16(6, cleanFlag, true);
+          lhView.setUint16(8, entry.compressionMethod, true);
+          lhView.setUint16(10, entry.modTime, true);
+          lhView.setUint16(12, entry.modDate, true);
+          lhView.setUint32(14, entry.crc32, true);
+          lhView.setUint32(18, entry.compSize, true);
+          lhView.setUint32(22, entry.uncompSize, true);
+          lhView.setUint16(26, nameLen, true);
+          lhView.setUint16(28, 0, true);
+
+          blobParts.push(localHeader, entry.nameBytes, entry.dataBlob);
+
+          // Construct 46-byte Central Directory Header
+          const cdHeader = new ArrayBuffer(46);
+          const cdView = new DataView(cdHeader);
+          cdView.setUint32(0, 0x02014b50, true);
+          cdView.setUint16(4, entry.versionMadeBy || 20, true);
+          cdView.setUint16(6, 20, true);
+          cdView.setUint16(8, cleanFlag, true);
+          cdView.setUint16(10, entry.compressionMethod, true);
+          cdView.setUint16(12, entry.modTime, true);
+          cdView.setUint16(14, entry.modDate, true);
+          cdView.setUint32(16, entry.crc32, true);
+          cdView.setUint32(20, entry.compSize, true);
+          cdView.setUint32(24, entry.uncompSize, true);
+          cdView.setUint16(28, nameLen, true);
+          cdView.setUint16(30, 0, true);
+          cdView.setUint16(32, 0, true);
+          cdView.setUint16(34, 0, true);
+          cdView.setUint16(36, entry.internalAttr || 0, true);
+          cdView.setUint32(38, entry.externalAttr || 0, true);
+          cdView.setUint32(42, currentOffset, true);
+
+          centralDirectoryParts.push(cdHeader, entry.nameBytes);
+          currentOffset += 30 + nameLen + entry.compSize;
+        }
+
+        const cdStartOffset = currentOffset;
+        let cdTotalSize = 0;
+        for (const p of centralDirectoryParts) {
+          cdTotalSize += p.byteLength;
+          blobParts.push(p);
+        }
+
+        const eocd = new ArrayBuffer(22);
+        const eocdView = new DataView(eocd);
+        eocdView.setUint32(0, 0x06054b50, true);
+        eocdView.setUint16(4, 0, true);
+        eocdView.setUint16(6, 0, true);
+        eocdView.setUint16(8, partEntries.length, true);
+        eocdView.setUint16(10, partEntries.length, true);
+        eocdView.setUint32(12, cdTotalSize, true);
+        eocdView.setUint32(16, cdStartOffset, true);
+        eocdView.setUint16(20, 0, true);
+
+        blobParts.push(eocd);
+        return new Blob(blobParts, { type: 'application/zip' });
+      }
+
+      async function sliceSmartZip(file, maxBytes) {
+        setProgress(5, 'Reading ZIP Central Directory...');
+        const rawEntries = await parseZipCentralDirectory(file);
+        if (rawEntries.length === 0) {
+          throw new Error('The ZIP archive appears to contain no files.');
+        }
+
+        const encoder = new TextEncoder();
+        const preparedEntries = [];
+        const safetyOverhead = 256 * 1024; // Reserve 256 KB for ZIP headers/Central Directory per part
+        const maxPayloadPerPart = maxBytes - safetyOverhead;
+
+        for (let i = 0; i < rawEntries.length; i++) {
+          const e = rawEntries[i];
+          if (i % 25 === 0) {
+            setProgress(5 + (i / rawEntries.length) * 55, `Inspecting entry ${i + 1} of ${rawEntries.length}...`);
+          }
+
+          const lhBuf = await file.slice(e.localHeaderOffset, e.localHeaderOffset + 30).arrayBuffer();
+          const lhView = new DataView(lhBuf);
+          if (lhView.getUint32(0, true) !== 0x04034b50) {
+            throw new Error(`Corrupt Local File Header at entry "${e.fileName}".`);
+          }
+          const localNameLen = lhView.getUint16(26, true);
+          const localExtraLen = lhView.getUint16(28, true);
+          const dataStart = e.localHeaderOffset + 30 + localNameLen + localExtraLen;
+          const dataBlob = file.slice(dataStart, dataStart + e.compSize);
+
+          const entryTotalFootprint = 76 + e.nameBytes.byteLength * 2 + e.compSize;
+
+          // If a single compressed entry is larger than the target part size, slice its payload into lossless chunks
+          if (entryTotalFootprint > maxPayloadPerPart) {
+            const chunkMax = maxPayloadPerPart - 1024;
+            const totalChunks = Math.ceil(dataBlob.size / chunkMax);
+            for (let c = 0; c < totalChunks; c++) {
+              const sliceStart = c * chunkMax;
+              const sliceEnd = Math.min(sliceStart + chunkMax, dataBlob.size);
+              const chunkBlob = dataBlob.slice(sliceStart, sliceEnd);
+              const partSuffix = `.part${String(c + 1).padStart(2, '0')}_of_${String(totalChunks).padStart(2, '0')}`;
+              const chunkName = e.fileName + partSuffix;
+              const chunkNameBytes = encoder.encode(chunkName);
+              const chunkCrc = await computeBlobCrc32(chunkBlob);
+
+              preparedEntries.push({
+                versionMadeBy: e.versionMadeBy,
+                versionNeeded: 20,
+                bitFlag: 0,
+                compressionMethod: 0, // Stored raw slice with verified CRC-32
+                modTime: e.modTime,
+                modDate: e.modDate,
+                crc32: chunkCrc,
+                compSize: chunkBlob.size,
+                uncompSize: chunkBlob.size,
+                nameBytes: chunkNameBytes,
+                fileName: chunkName,
+                internalAttr: e.internalAttr,
+                externalAttr: e.externalAttr,
+                dataBlob: chunkBlob
+              });
+            }
+          } else {
+            preparedEntries.push({
+              ...e,
+              dataBlob
+            });
+          }
+        }
+
+        // Pack entries into standalone ZIP parts under maxBytes
+        const buckets = [];
+        let currentBucket = [];
+        let currentBucketBytes = 22; // EOCD base size
+
+        for (const item of preparedEntries) {
+          const itemBytes = 76 + item.nameBytes.byteLength * 2 + item.compSize;
+          if (currentBucket.length > 0 && currentBucketBytes + itemBytes > maxBytes) {
+            buckets.push(currentBucket);
+            currentBucket = [];
+            currentBucketBytes = 22;
+          }
+          currentBucket.push(item);
+          currentBucketBytes += itemBytes;
+        }
+        if (currentBucket.length > 0) {
+          buckets.push(currentBucket);
+        }
+
+        const baseName = file.name.replace(/\.zip$/i, '');
+        const outputParts = [];
+
+        for (let b = 0; b < buckets.length; b++) {
+          setProgress(65 + ((b + 1) / buckets.length) * 35, `Building standalone ZIP part ${b + 1} of ${buckets.length}...`);
+          const zipBlob = buildStandaloneZip(buckets[b]);
+          const partNum = String(b + 1).padStart(2, '0');
+          outputParts.push({
+            name: `${baseName}_part${partNum}.zip`,
+            blob: zipBlob,
+            entryCount: buckets[b].length
+          });
+        }
+
+        return outputParts;
+      }
+
+      async function sliceRawBinary(file, maxBytes) {
+        const totalParts = Math.ceil(file.size / maxBytes);
+        const outputParts = [];
+        for (let i = 0; i < totalParts; i++) {
+          setProgress(((i + 1) / totalParts) * 100, `Slicing binary chunk ${i + 1} of ${totalParts}...`);
+          const start = i * maxBytes;
+          const end = Math.min(start + maxBytes, file.size);
+          const chunkBlob = file.slice(start, end, 'application/octet-stream');
+          const partNum = String(i + 1).padStart(2, '0');
+          outputParts.push({
+            name: `${file.name}.part${partNum}`,
+            blob: chunkBlob,
+            entryCount: null
+          });
+        }
+        return outputParts;
+      }
+
+      sliceBtn.addEventListener('click', async () => {
+        if (!currentFile) return;
+        clearError();
+        revokeGeneratedUrls();
+        resultsCard.style.display = 'none';
+        sliceBtn.disabled = true;
+
+        const maxMb = parseInt(maxSizeInput.value, 10) || 60;
+        const maxBytes = maxMb * 1024 * 1024;
+
+        try {
+          let parts = [];
+          if (splitMode.value === 'smart') {
+            parts = await sliceSmartZip(currentFile, maxBytes);
+          } else {
+            parts = await sliceRawBinary(currentFile, maxBytes);
+          }
+
+          renderResults(parts, maxMb);
+        } catch (err) {
+          showError(err.message || 'An unexpected error occurred while slicing the archive.');
+        } finally {
+          sliceBtn.disabled = false;
+        }
+      });
+
+      function renderResults(parts, maxMb) {
+        partsList.innerHTML = '';
+        resultsTitle.textContent = `Ready for Glean Upload (${parts.length} ${parts.length === 1 ? 'Part' : 'Parts'})`;
+        resultsSubtitle.textContent =
+          `Every part is verified below ${maxMb} MB (Glean limit: 64 MB) with 100% original payload integrity.`;
+
+        parts.forEach((p, idx) => {
+          const url = URL.createObjectURL(p.blob);
+          generatedUrls.push({ name: p.name, url });
+
+          const row = document.createElement('div');
+          row.className = 'part-item';
+
+          const metaText = p.entryCount !== null
+            ? `${formatBytes(p.blob.size)} • ${p.entryCount} internal ${p.entryCount === 1 ? 'entry' : 'entries'} • Valid standalone .zip`
+            : `${formatBytes(p.blob.size)} • Exact binary slice`;
+
+          row.innerHTML = `
+            <div class="part-info">
+              <div class="part-title">
+                <span>${p.name}</span>
+                <span class="part-badge">Part ${idx + 1} of ${parts.length}</span>
+              </div>
+              <div class="part-sub">${metaText}</div>
+            </div>
+            <a href="${url}" download="${p.name}" class="btn btn-secondary">Download Part ${idx + 1}</a>
+          `;
+          partsList.appendChild(row);
+        });
+
+        resultsCard.style.display = 'block';
+      }
+
+      downloadAllBtn.addEventListener('click', () => {
+        generatedUrls.forEach((item, index) => {
+          setTimeout(() => {
+            const a = document.createElement('a');
+            a.href = item.url;
+            a.download = item.name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }, index * 350);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zip Slicer — Client-Side TSF Archive Splitter for Glean</title>
+  <title>Zip Slicer — Archive Splitter</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -15,7 +15,6 @@
       --primary: #3b82f6;
       --primary-hover: #2563eb;
       --success: #10b981;
-      --warning: #f59e0b;
       --danger: #ef4444;
       --radius: 12px;
     }
@@ -46,7 +45,7 @@
     }
 
     .container {
-      max-width: 960px;
+      max-width: 880px;
       margin: 0 auto;
       padding: 0 1.25rem;
       width: 100%;
@@ -56,8 +55,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 68px;
+      min-height: 64px;
+      padding: 0.5rem 0;
       gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .brand {
@@ -67,40 +68,40 @@
     }
 
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
       background: linear-gradient(135deg, var(--primary), #1d4ed8);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
     }
 
     .brand-title {
       font-weight: 700;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       letter-spacing: -0.01em;
     }
 
     .brand-subtitle {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
 
     .badge-privacy {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      font-size: 0.78rem;
+      gap: 0.4rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: #34d399;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.35rem 0.75rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.3rem 0.7rem;
       border-radius: 999px;
     }
 
@@ -120,66 +121,62 @@
     .dropzone {
       border: 2px dashed var(--border);
       border-radius: var(--radius);
-      padding: 2.75rem 1.5rem;
+      padding: 2.5rem 1.5rem;
       text-align: center;
       cursor: pointer;
       transition: border-color 0.2s, background-color 0.2s;
-      background: rgba(31, 41, 55, 0.35);
+      background: rgba(31, 41, 55, 0.3);
     }
 
     .dropzone:hover,
     .dropzone.dragover {
       border-color: var(--primary);
-      background: rgba(59, 130, 246, 0.08);
+      background: rgba(59, 130, 246, 0.06);
     }
 
     .dropzone-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 0.85rem;
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 0.75rem;
       border-radius: 50%;
       background: rgba(59, 130, 246, 0.15);
       color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
     }
 
     .dropzone h2 {
-      font-size: 1.1rem;
-      margin-bottom: 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
     }
 
     .dropzone p {
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
     }
 
     .controls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
       margin-top: 1.25rem;
     }
 
     .control-group label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-
-    .control-help {
-      font-size: 0.76rem;
       color: var(--text-muted);
-      margin-top: 0.3rem;
+      margin-bottom: 0.4rem;
     }
 
     .input-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
     }
 
     input[type="range"] {
@@ -193,14 +190,14 @@
       background: var(--surface-elevated);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.55rem 0.75rem;
+      padding: 0.5rem 0.65rem;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       width: 100%;
     }
 
     .number-box {
-      width: 88px !important;
+      width: 72px !important;
       text-align: center;
       font-weight: 600;
     }
@@ -209,10 +206,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
+      gap: 0.45rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      padding: 0.65rem 1.15rem;
+      padding: 0.6rem 1.1rem;
       border-radius: 8px;
       border: 1px solid transparent;
       cursor: pointer;
@@ -251,7 +248,7 @@
       flex-wrap: wrap;
       gap: 1rem;
       margin-top: 1.25rem;
-      padding: 1rem;
+      padding: 0.9rem 1rem;
       border-radius: 10px;
       background: var(--surface-elevated);
       border: 1px solid var(--border);
@@ -260,25 +257,39 @@
     .file-meta {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.15rem;
     }
 
     .file-name {
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       word-break: break-all;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .format-pill {
+      font-size: 0.7rem;
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      font-weight: 600;
     }
 
     .file-stats {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
     .alert {
       display: none;
-      padding: 0.9rem 1.1rem;
+      padding: 0.85rem 1rem;
       border-radius: 10px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       margin-bottom: 1.25rem;
     }
 
@@ -288,12 +299,6 @@
       color: #fca5a5;
     }
 
-    .alert-info {
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.35);
-      color: #93c5fd;
-    }
-
     .progress-wrap {
       display: none;
       margin-top: 1.25rem;
@@ -301,23 +306,23 @@
 
     .progress-bar-bg {
       width: 100%;
-      height: 10px;
+      height: 8px;
       background: var(--surface-elevated);
       border-radius: 999px;
       overflow: hidden;
-      margin-top: 0.45rem;
+      margin-top: 0.4rem;
     }
 
     .progress-bar-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--primary), #10b981);
-      transition: width 0.15s ease;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      transition: width 0.12s ease;
     }
 
     .parts-list {
       display: grid;
-      gap: 0.75rem;
+      gap: 0.65rem;
       margin-top: 1rem;
     }
 
@@ -326,7 +331,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.9rem 1rem;
+      padding: 0.85rem 1rem;
       background: var(--surface-elevated);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -341,15 +346,16 @@
 
     .part-title {
       font-weight: 600;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .part-badge {
-      font-size: 0.72rem;
-      padding: 0.15rem 0.5rem;
+      font-size: 0.7rem;
+      padding: 0.12rem 0.5rem;
       border-radius: 999px;
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
@@ -357,7 +363,7 @@
     }
 
     .part-sub {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
 
@@ -373,7 +379,7 @@
       border-top: 1px solid var(--border);
       padding: 1.25rem 0;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
   </style>
@@ -385,11 +391,11 @@
         <div class="brand-icon">ZS</div>
         <div>
           <div class="brand-title">Zip Slicer</div>
-          <div class="brand-subtitle">Lossless TSF Archive Splitter for Glean (&lt; 64 MB)</div>
+          <div class="brand-subtitle">Local Archive Splitter</div>
         </div>
       </div>
       <div class="badge-privacy">
-        <span>● 100% Local Browser Processing — Zero Server Uploads</span>
+        <span>● 100% Local Processing</span>
       </div>
     </div>
   </header>
@@ -398,47 +404,65 @@
     <div id="alertBox" class="alert alert-error"></div>
 
     <div class="card">
-      <input type="file" id="fileInput" accept=".zip,.tgz,.tar.gz,.tar,.bin,application/zip" hidden />
+      <input type="file" id="fileInput" accept=".tgz,.tar.gz,.tar,.zip,application/gzip,application/x-gzip,application/x-gtar,application/zip" hidden />
       <div id="dropzone" class="dropzone">
         <div class="dropzone-icon">↑</div>
-        <h2>Drag &amp; drop your TSF archive here, or click to browse</h2>
-        <p>Supports standard &amp; ZIP64 archives of any size. Processed locally in memory slices without recompression.</p>
+        <h2>Drop your archive here, or click to browse</h2>
+        <p>Supports .tgz, .tar.gz, .tar, and .zip files</p>
       </div>
 
       <div class="controls-grid">
         <div class="control-group">
-          <label for="maxSizeRange">Maximum Part Size (MB)</label>
+          <label for="maxSizeRange">Max Part Size (MB)</label>
           <div class="input-row">
-            <input type="range" id="maxSizeRange" min="10" max="63" step="1" value="60" />
-            <input type="number" id="maxSizeInput" class="number-box" min="10" max="63" value="60" />
+            <input type="range" id="maxSizeRange" min="10" max="60" step="1" value="52" />
+            <input type="number" id="maxSizeInput" class="number-box" min="10" max="60" value="52" />
           </div>
-          <div class="control-help">Default is 60 MB to stay safely under Glean's 64 MB upload limit.</div>
         </div>
 
         <div class="control-group">
-          <label for="splitMode">Splitting Mode</label>
+          <label for="maxUncompRange">Max Uncompressed (MB)</label>
+          <div class="input-row">
+            <input type="range" id="maxUncompRange" min="40" max="220" step="5" value="160" />
+            <input type="number" id="maxUncompInput" class="number-box" min="40" max="220" value="160" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="maxFilesInput">Max Files per Part</label>
+          <div class="input-row">
+            <input type="range" id="maxFilesRange" min="100" max="1000" step="50" value="400" />
+            <input type="number" id="maxFilesInput" class="number-box" min="100" max="1000" value="400" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="splitMode">Output Format</label>
           <select id="splitMode">
-            <option value="smart">Smart Standalone ZIPs (Recommended for Glean)</option>
-            <option value="raw">Raw Binary Chunks (.part01, .part02)</option>
+            <option value="archive_tgz">Standalone .tgz Parts</option>
+            <option value="archive_zip">Standalone .zip Parts</option>
+            <option value="archive_txt">Text Bundles (.txt)</option>
           </select>
-          <div class="control-help">Smart mode copies raw compressed entries into valid standalone .zip files without recompressing.</div>
         </div>
       </div>
 
       <div id="fileSummary" class="file-summary">
         <div class="file-meta">
-          <div id="selectedFileName" class="file-name"></div>
+          <div class="file-name">
+            <span id="selectedFileName"></span>
+            <span id="detectedFormatBadge" class="format-pill"></span>
+          </div>
           <div id="selectedFileStats" class="file-stats"></div>
         </div>
-        <div style="display: flex; gap: 0.6rem;">
+        <div style="display: flex; gap: 0.5rem;">
           <button id="clearBtn" class="btn btn-secondary" type="button">Clear</button>
-          <button id="sliceBtn" class="btn btn-primary" type="button">Slice Archive</button>
+          <button id="sliceBtn" class="btn btn-primary" type="button">Split Archive</button>
         </div>
       </div>
 
       <div id="progressWrap" class="progress-wrap">
-        <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
-          <span id="progressText">Processing archive...</span>
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+          <span id="progressText">Splitting archive...</span>
           <span id="progressPct">0%</span>
         </div>
         <div class="progress-bar-bg">
@@ -450,18 +474,19 @@
     <div id="resultsCard" class="card" style="display: none;">
       <div class="results-header">
         <div>
-          <h3 id="resultsTitle" style="font-size: 1.05rem;">Generated Parts</h3>
-          <p id="resultsSubtitle" style="font-size: 0.82rem; color: var(--text-muted);"></p>
+          <h3 id="resultsTitle" style="font-size: 1rem;">Parts</h3>
+          <p id="resultsSubtitle" style="font-size: 0.8rem; color: var(--text-muted);"></p>
         </div>
-        <button id="downloadAllBtn" class="btn btn-primary" type="button">Download All Parts</button>
+        <button id="downloadAllBtn" class="btn btn-primary" type="button">Download All</button>
       </div>
+
       <div id="partsList" class="parts-list"></div>
     </div>
   </main>
 
   <footer>
     <div class="container">
-      Zip Slicer runs strictly in your browser using native File &amp; Blob slicing APIs. No telemetry, external APIs, or server transfers.
+      Processed locally in your browser. No files are uploaded to any server.
     </div>
   </footer>
 
@@ -471,9 +496,14 @@
       const fileInput = document.getElementById('fileInput');
       const maxSizeRange = document.getElementById('maxSizeRange');
       const maxSizeInput = document.getElementById('maxSizeInput');
+      const maxUncompRange = document.getElementById('maxUncompRange');
+      const maxUncompInput = document.getElementById('maxUncompInput');
+      const maxFilesRange = document.getElementById('maxFilesRange');
+      const maxFilesInput = document.getElementById('maxFilesInput');
       const splitMode = document.getElementById('splitMode');
       const fileSummary = document.getElementById('fileSummary');
       const selectedFileName = document.getElementById('selectedFileName');
+      const detectedFormatBadge = document.getElementById('detectedFormatBadge');
       const selectedFileStats = document.getElementById('selectedFileStats');
       const sliceBtn = document.getElementById('sliceBtn');
       const clearBtn = document.getElementById('clearBtn');
@@ -489,9 +519,9 @@
       const downloadAllBtn = document.getElementById('downloadAllBtn');
 
       let currentFile = null;
+      let currentFileFormat = 'unknown';
       let generatedUrls = [];
 
-      // Precompute CRC-32 Lookup Table for oversized single-entry segmenting
       const CRC_TABLE = new Uint32Array(256);
       for (let i = 0; i < 256; i++) {
         let c = i;
@@ -501,12 +531,9 @@
         CRC_TABLE[i] = c >>> 0;
       }
 
-      async function computeBlobCrc32(blob) {
-        const chunkSize = 4 * 1024 * 1024;
+      function computeChunksCrc32(chunks) {
         let crc = 0xFFFFFFFF;
-        for (let offset = 0; offset < blob.size; offset += chunkSize) {
-          const buf = await blob.slice(offset, Math.min(offset + chunkSize, blob.size)).arrayBuffer();
-          const bytes = new Uint8Array(buf);
+        for (const bytes of chunks) {
           for (let i = 0; i < bytes.length; i++) {
             crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
           }
@@ -546,17 +573,58 @@
         if (label) progressText.textContent = label;
       }
 
+      async function detectArchiveFormat(file) {
+        const headerBuf = await file.slice(0, Math.min(512, file.size)).arrayBuffer();
+        const bytes = new Uint8Array(headerBuf);
+        if (bytes.length >= 2 && bytes[0] === 0x1F && bytes[1] === 0x8B) return 'tgz';
+        if (bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4B &&
+            (bytes[2] === 0x03 || bytes[2] === 0x05)) return 'zip';
+        if (bytes.length >= 262 &&
+            bytes[257] === 0x75 && bytes[258] === 0x73 &&
+            bytes[259] === 0x74 && bytes[260] === 0x61 && bytes[261] === 0x72) return 'tar';
+        const lower = file.name.toLowerCase();
+        if (lower.endsWith('.tgz') || lower.endsWith('.tar.gz')) return 'tgz';
+        if (lower.endsWith('.zip')) return 'zip';
+        if (lower.endsWith('.tar')) return 'tar';
+        return 'unknown';
+      }
+
       maxSizeRange.addEventListener('input', () => {
         maxSizeInput.value = maxSizeRange.value;
         updateFilePreview();
       });
-
       maxSizeInput.addEventListener('change', () => {
         let val = parseInt(maxSizeInput.value, 10);
         if (isNaN(val) || val < 10) val = 10;
-        if (val > 63) val = 63;
+        if (val > 60) val = 60;
         maxSizeInput.value = val;
         maxSizeRange.value = val;
+        updateFilePreview();
+      });
+
+      maxUncompRange.addEventListener('input', () => {
+        maxUncompInput.value = maxUncompRange.value;
+        updateFilePreview();
+      });
+      maxUncompInput.addEventListener('change', () => {
+        let val = parseInt(maxUncompInput.value, 10);
+        if (isNaN(val) || val < 40) val = 40;
+        if (val > 220) val = 220;
+        maxUncompInput.value = val;
+        maxUncompRange.value = val;
+        updateFilePreview();
+      });
+
+      maxFilesRange.addEventListener('input', () => {
+        maxFilesInput.value = maxFilesRange.value;
+        updateFilePreview();
+      });
+      maxFilesInput.addEventListener('change', () => {
+        let val = parseInt(maxFilesInput.value, 10);
+        if (isNaN(val) || val < 100) val = 100;
+        if (val > 1000) val = 1000;
+        maxFilesInput.value = val;
+        maxFilesRange.value = val;
         updateFilePreview();
       });
 
@@ -590,167 +658,492 @@
         clearError();
       });
 
-      function handleFileSelect(file) {
+      async function handleFileSelect(file) {
         clearError();
         revokeGeneratedUrls();
         resultsCard.style.display = 'none';
         progressWrap.style.display = 'none';
 
         if (!file || file.size === 0) {
-          showError('The selected file is empty (0 bytes). Please choose a valid TSF archive.');
+          showError('The selected file is empty. Please choose a valid archive.');
           return;
         }
 
         currentFile = file;
+        currentFileFormat = await detectArchiveFormat(file);
         fileSummary.style.display = 'flex';
         updateFilePreview();
       }
 
       function updateFilePreview() {
         if (!currentFile) return;
-        const maxBytes = parseInt(maxSizeInput.value, 10) * 1024 * 1024;
-        const estParts = Math.max(1, Math.ceil(currentFile.size / maxBytes));
         selectedFileName.textContent = currentFile.name;
+        const formatLabels = {
+          tgz: 'TGZ',
+          tar: 'TAR',
+          zip: 'ZIP',
+          unknown: 'Archive'
+        };
+        detectedFormatBadge.textContent = formatLabels[currentFileFormat] || 'Archive';
         selectedFileStats.textContent =
-          `Total size: ${formatBytes(currentFile.size)} • Target limit: ${maxSizeInput.value} MB • Estimated parts: ~${estParts}`;
+          `Size: ${formatBytes(currentFile.size)} • Max ${maxSizeInput.value} MB per part`;
       }
 
-      // Parse ZIP Central Directory (with ZIP64 support) without loading full archive into RAM
-      async function parseZipCentralDirectory(file) {
-        const searchSize = Math.min(file.size, 65557);
-        const tailStart = file.size - searchSize;
-        const tailBuf = await file.slice(tailStart, file.size).arrayBuffer();
-        const tailView = new DataView(tailBuf);
+      // =========================================================================
+      // ARCHIVE SANITIZATION & NORMALIZATION HELPERS
+      // =========================================================================
 
-        let eocdPos = -1;
-        for (let i = tailBuf.byteLength - 22; i >= 0; i--) {
-          if (tailView.getUint32(i, true) === 0x06054b50) {
-            eocdPos = i;
-            break;
+      function sanitizeArchivePath(rawPath) {
+        if (!rawPath) return '';
+        let cleaned = rawPath.replace(/\\/g, '/').trim();
+        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '_');
+        cleaned = cleaned.replace(/^(\.\/+|\/+)+/, '');
+        const segments = cleaned.split('/');
+        const safeSegments = [];
+        for (let seg of segments) {
+          if (!seg || seg === '.') continue;
+          if (seg === '..') {
+            safeSegments.pop();
+            continue;
           }
+          if (seg.startsWith('.')) {
+            seg = '_dot_' + seg.slice(1);
+          }
+          seg = seg.replace(/[:*?"<>|]/g, '_');
+          if (seg) safeSegments.push(seg);
+        }
+        return safeSegments.join('/');
+      }
+
+      function fitPathToUstar(cleanPath, uniqueCounter) {
+        const encoder = new TextEncoder();
+        const fullBytes = encoder.encode(cleanPath);
+        if (fullBytes.byteLength <= 95 && !cleanPath.includes('/')) {
+          return { prefix: '', name: cleanPath, finalPath: cleanPath };
         }
 
-        if (eocdPos === -1) {
-          throw new Error('Not a valid ZIP archive (End of Central Directory signature not found). Use "Raw Binary Chunks" mode for non-ZIP files.');
-        }
+        const slashIdx = cleanPath.lastIndexOf('/');
+        if (slashIdx > 0) {
+          let dirPart = cleanPath.slice(0, slashIdx);
+          let basePart = cleanPath.slice(slashIdx + 1);
 
-        let cdCount = tailView.getUint16(eocdPos + 10, true);
-        let cdSize = tailView.getUint32(eocdPos + 12, true);
-        let cdOffset = tailView.getUint32(eocdPos + 16, true);
-
-        // Check for ZIP64 EOCD Locator immediately preceding EOCD
-        if (eocdPos >= 20 && tailView.getUint32(eocdPos - 20, true) === 0x07064b50) {
-          const zip64EocdOffset = Number(tailView.getBigUint64(eocdPos - 12, true));
-          const z64Buf = await file.slice(zip64EocdOffset, zip64EocdOffset + 56).arrayBuffer();
-          const z64View = new DataView(z64Buf);
-          if (z64View.getUint32(0, true) === 0x06064b50) {
-            cdCount = Number(z64View.getBigUint64(32, true));
-            cdSize = Number(z64View.getBigUint64(40, true));
-            cdOffset = Number(z64View.getBigUint64(48, true));
-          }
-        }
-
-        const cdBuf = await file.slice(cdOffset, cdOffset + cdSize).arrayBuffer();
-        const cdView = new DataView(cdBuf);
-        const cdBytes = new Uint8Array(cdBuf);
-        const decoder = new TextDecoder('utf-8');
-
-        const entries = [];
-        let ptr = 0;
-
-        while (ptr < cdBuf.byteLength) {
-          if (cdView.getUint32(ptr, true) !== 0x02014b50) {
-            break;
+          if (encoder.encode(basePart).byteLength > 95) {
+            const extMatch = basePart.match(/(\.[a-z0-9]{1,6})$/i);
+            const ext = extMatch ? extMatch[1] : '.txt';
+            const tag = `_h${uniqueCounter}`;
+            const maxStemLen = 90 - ext.length - tag.length;
+            basePart = basePart.slice(0, Math.max(12, maxStemLen)) + tag + ext;
           }
 
-          const versionMadeBy = cdView.getUint16(ptr + 4, true);
-          const versionNeeded = cdView.getUint16(ptr + 6, true);
-          const bitFlag = cdView.getUint16(ptr + 8, true);
-          const compressionMethod = cdView.getUint16(ptr + 10, true);
-          const modTime = cdView.getUint16(ptr + 12, true);
-          const modDate = cdView.getUint16(ptr + 14, true);
-          const crc32 = cdView.getUint32(ptr + 16, true);
-          let compSize = cdView.getUint32(ptr + 20, true);
-          let uncompSize = cdView.getUint32(ptr + 24, true);
-          const nameLen = cdView.getUint16(ptr + 28, true);
-          const extraLen = cdView.getUint16(ptr + 30, true);
-          const commentLen = cdView.getUint16(ptr + 32, true);
-          const internalAttr = cdView.getUint16(ptr + 36, true);
-          const externalAttr = cdView.getUint32(ptr + 38, true);
-          let localHeaderOffset = cdView.getUint32(ptr + 42, true);
+          if (encoder.encode(dirPart).byteLength > 150) {
+            const dirSegs = dirPart.split('/');
+            while (dirSegs.length > 1 && encoder.encode(dirSegs.join('/')).byteLength > 142) {
+              dirSegs.splice(1, 1);
+            }
+            dirPart = dirSegs.join('/').slice(0, 145);
+            dirPart = dirPart.replace(/\/+$/, '');
+          }
 
-          const nameBytes = cdBytes.slice(ptr + 46, ptr + 46 + nameLen);
-          const fileName = decoder.decode(nameBytes);
-
-          // Parse ZIP64 Extra Field if present
-          if (compSize === 0xFFFFFFFF || uncompSize === 0xFFFFFFFF || localHeaderOffset === 0xFFFFFFFF) {
-            let extraPtr = ptr + 46 + nameLen;
-            const extraEnd = extraPtr + extraLen;
-            while (extraPtr + 4 <= extraEnd) {
-              const headerId = cdView.getUint16(extraPtr, true);
-              const dataSize = cdView.getUint16(extraPtr + 2, true);
-              if (headerId === 0x0001) {
-                let zPtr = extraPtr + 4;
-                if (uncompSize === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
-                  uncompSize = Number(cdView.getBigUint64(zPtr, true));
-                  zPtr += 8;
-                }
-                if (compSize === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
-                  compSize = Number(cdView.getBigUint64(zPtr, true));
-                  zPtr += 8;
-                }
-                if (localHeaderOffset === 0xFFFFFFFF && zPtr + 8 <= extraEnd) {
-                  localHeaderOffset = Number(cdView.getBigUint64(zPtr, true));
-                  zPtr += 8;
-                }
-                break;
+          const candidatePath = `${dirPart}/${basePart}`;
+          for (let i = candidatePath.length - 1; i > 0; i--) {
+            if (candidatePath[i] === '/') {
+              const p = candidatePath.slice(0, i);
+              const n = candidatePath.slice(i + 1);
+              if (n.length > 0 && !n.startsWith('/') &&
+                  encoder.encode(p).byteLength <= 150 &&
+                  encoder.encode(n).byteLength <= 95) {
+                return { prefix: p, name: n, finalPath: candidatePath };
               }
-              extraPtr += 4 + dataSize;
             }
           }
-
-          entries.push({
-            versionMadeBy,
-            versionNeeded,
-            bitFlag,
-            compressionMethod,
-            modTime,
-            modDate,
-            crc32,
-            compSize,
-            uncompSize,
-            nameBytes,
-            fileName,
-            internalAttr,
-            externalAttr,
-            localHeaderOffset
-          });
-
-          ptr += 46 + nameLen + extraLen + commentLen;
         }
 
-        return entries;
+        const extMatch = cleanPath.match(/(\.[a-z0-9]{1,6})$/i);
+        const ext = extMatch ? extMatch[1] : '.txt';
+        const tag = `_h${uniqueCounter}`;
+        const shortName = cleanPath.replace(/\//g, '_').slice(0, 88 - ext.length - tag.length) + tag + ext;
+        return { prefix: '', name: shortName, finalPath: shortName };
       }
 
-      // Build a standalone valid ZIP Blob from a list of prepared entries
+      function ensureReadableExtension(cleanPath, stats) {
+        if (/\.(sh|bash|csh|ksh|zsh|bat|cmd|ps1|vbs|cgi|py|pl|rb|php|tcl|awk|sed)$/i.test(cleanPath)) {
+          stats.scriptsRenamed++;
+          return cleanPath + '.txt';
+        }
+        if (/\.(txt|log|xml|json|csv|yaml|yml|md|html|htm|css)$/i.test(cleanPath)) {
+          return cleanPath;
+        }
+        if (/\.(log|txt|out|err)\.\d+$/i.test(cleanPath) || /\/log\/.*\.[0-9]+$/i.test(cleanPath)) {
+          return cleanPath + '.log';
+        }
+        return cleanPath + '.txt';
+      }
+
+      function detectPayloadMagic(firstChunk) {
+        if (!firstChunk || firstChunk.byteLength < 4) return 'none';
+        if (firstChunk[0] === 0x1F && firstChunk[1] === 0x8B) return 'gzip';
+        if (firstChunk.byteLength >= 262 &&
+            firstChunk[257] === 0x75 && firstChunk[258] === 0x73 &&
+            firstChunk[259] === 0x74 && firstChunk[260] === 0x61 && firstChunk[261] === 0x72) {
+          return 'tar';
+        }
+        if (firstChunk[0] === 0x7F && firstChunk[1] === 0x45 &&
+            firstChunk[2] === 0x4C && firstChunk[3] === 0x46) {
+          return 'elf';
+        }
+        if (firstChunk[0] === 0x4D && firstChunk[1] === 0x5A) return 'pe';
+        if (firstChunk[0] === 0x50 && firstChunk[1] === 0x4B &&
+            (firstChunk[2] === 0x03 || firstChunk[2] === 0x05)) {
+          return 'zip_container';
+        }
+        if (firstChunk[0] === 0x42 && firstChunk[1] === 0x5A && firstChunk[2] === 0x68) return 'bzip2';
+        if (firstChunk.byteLength >= 6 && firstChunk[0] === 0xFD && firstChunk[1] === 0x37 &&
+            firstChunk[2] === 0x7A && firstChunk[3] === 0x58 && firstChunk[4] === 0x5A) {
+          return 'xz';
+        }
+        if (firstChunk[0] === 0x28 && firstChunk[1] === 0xB5 &&
+            firstChunk[2] === 0x2F && firstChunk[3] === 0xFD) {
+          return 'zstd';
+        }
+        if (firstChunk.byteLength >= 6 && firstChunk[0] === 0x37 && firstChunk[1] === 0x7A &&
+            firstChunk[2] === 0xBC && firstChunk[3] === 0xAF) {
+          return '7z';
+        }
+        if (firstChunk.byteLength >= 15 &&
+            firstChunk[0] === 0x53 && firstChunk[1] === 0x51 &&
+            firstChunk[2] === 0x4C && firstChunk[3] === 0x69) {
+          return 'sqlite';
+        }
+        if ((firstChunk[0] === 0xD4 && firstChunk[1] === 0xC3 && firstChunk[2] === 0xB2 && firstChunk[3] === 0xA1) ||
+            (firstChunk[0] === 0xA1 && firstChunk[1] === 0xB2 && firstChunk[2] === 0xC3 && firstChunk[3] === 0xD4) ||
+            (firstChunk[0] === 0x0A && firstChunk[1] === 0x0D && firstChunk[2] === 0x0D && firstChunk[3] === 0x0A)) {
+          return 'pcap';
+        }
+        return 'none';
+      }
+
+      function analyzeAndSanitizePayload(dataChunks, totalSize) {
+        let sampleChecked = 0;
+        let nonTextBytes = 0;
+        let nullBytesCount = 0;
+        const maxSample = 16384;
+
+        for (const chunk of dataChunks) {
+          for (let i = 0; i < chunk.byteLength; i++) {
+            const b = chunk[i];
+            if (b === 0) {
+              nullBytesCount++;
+            } else if (sampleChecked < maxSample) {
+              if (b < 9 || (b > 13 && b < 32 && b !== 27) || b === 0x7F) {
+                nonTextBytes++;
+              }
+            }
+            if (sampleChecked < maxSample) sampleChecked++;
+          }
+        }
+
+        const isBinary = sampleChecked > 0 && (
+          (nonTextBytes / sampleChecked) > 0.08 ||
+          (nullBytesCount > 0 && (nullBytesCount / Math.max(1, totalSize)) > 0.02)
+        );
+
+        if (isBinary) {
+          return { isBinary: true, hadNulls: nullBytesCount > 0, sanitizedChunks: dataChunks };
+        }
+
+        const sanitizedChunks = [];
+        let isFirstChunk = true;
+        for (const chunk of dataChunks) {
+          let modified = null;
+          if (isFirstChunk && chunk.byteLength >= 2 && chunk[0] === 0x23 && chunk[1] === 0x21) {
+            modified = new Uint8Array(chunk);
+            modified[1] = 0x20;
+          }
+          for (let i = 0; i < chunk.byteLength; i++) {
+            if (chunk[i] === 0) {
+              if (!modified) modified = new Uint8Array(chunk);
+              modified[i] = 0x20;
+            }
+          }
+          sanitizedChunks.push(modified || chunk);
+          isFirstChunk = false;
+        }
+
+        return { isBinary: false, hadNulls: nullBytesCount > 0, sanitizedChunks };
+      }
+
+      function extractPrintableStringsFromBinary(cleanPath, totalSize, magicType, dataChunks) {
+        const encoder = new TextEncoder();
+        const headerText =
+          `========================================================================\n` +
+          `EXTRACTED STRINGS: ${cleanPath}\n` +
+          `Original Size: ${formatBytes(totalSize)} (${totalSize} bytes) | Type: ${magicType}\n` +
+          `========================================================================\n`;
+
+        const outStrings = [headerText];
+        let currentStr = '';
+        let extractedBytes = headerText.length;
+        const maxExtractBytes = 2 * 1024 * 1024;
+
+        for (const chunk of dataChunks) {
+          for (let i = 0; i < chunk.byteLength; i++) {
+            const b = chunk[i];
+            if ((b >= 32 && b <= 126) || b === 9) {
+              currentStr += String.fromCharCode(b);
+            } else {
+              if (currentStr.length >= 4) {
+                outStrings.push(currentStr + '\n');
+                extractedBytes += currentStr.length + 1;
+                if (extractedBytes >= maxExtractBytes) break;
+              }
+              currentStr = '';
+            }
+          }
+          if (extractedBytes >= maxExtractBytes) break;
+        }
+        if (currentStr.length >= 4 && extractedBytes < maxExtractBytes) {
+          outStrings.push(currentStr + '\n');
+        }
+
+        const encoded = encoder.encode(outStrings.join(''));
+        return { chunks: [encoded], size: encoded.byteLength };
+      }
+
+      async function safeDecompressGzipChunks(compressedChunks) {
+        const blob = new Blob(compressedChunks);
+        const ds = new DecompressionStream('gzip');
+        const stream = blob.stream().pipeThrough(ds);
+        const reader = stream.getReader();
+        const outChunks = [];
+        let totalLen = 0;
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            if (value && value.byteLength > 0) {
+              outChunks.push(value);
+              totalLen += value.byteLength;
+            }
+          }
+        } catch (_) {}
+        return { chunks: outChunks, totalSize: totalLen };
+      }
+
+      // =========================================================================
+      // STREAMING TAR READER & USTAR WRITER
+      // =========================================================================
+
+      class StreamBlockReader {
+        constructor(readableStream) {
+          this.reader = readableStream.getReader();
+          this.chunks = [];
+          this.totalBuffered = 0;
+          this.eof = false;
+        }
+
+        async readExact(n) {
+          if (n === 0) return new Uint8Array(0);
+          while (this.totalBuffered < n && !this.eof) {
+            const { value, done } = await this.reader.read();
+            if (done) {
+              this.eof = true;
+              break;
+            }
+            if (value && value.byteLength > 0) {
+              this.chunks.push(value);
+              this.totalBuffered += value.byteLength;
+            }
+          }
+          if (this.totalBuffered === 0) return null;
+          const outLen = Math.min(n, this.totalBuffered);
+          const out = new Uint8Array(outLen);
+          let copied = 0;
+          while (copied < outLen && this.chunks.length > 0) {
+            const first = this.chunks[0];
+            const needed = outLen - copied;
+            if (first.byteLength <= needed) {
+              out.set(first, copied);
+              copied += first.byteLength;
+              this.chunks.shift();
+            } else {
+              out.set(first.subarray(0, needed), copied);
+              this.chunks[0] = first.subarray(needed);
+              copied += needed;
+            }
+          }
+          this.totalBuffered -= outLen;
+          return out;
+        }
+      }
+
+      function isZeroBlock(block) {
+        for (let i = 0; i < block.byteLength; i++) {
+          if (block[i] !== 0) return false;
+        }
+        return true;
+      }
+
+      function parseTarNumber(header, offset, length) {
+        if ((header[offset] & 0x80) !== 0) {
+          let val = 0;
+          for (let i = offset + 1; i < offset + length; i++) {
+            val = (val * 256) + header[i];
+          }
+          return val;
+        }
+        let str = '';
+        for (let i = offset; i < offset + length; i++) {
+          const c = header[i];
+          if (c === 0) break;
+          str += String.fromCharCode(c);
+        }
+        str = str.trim();
+        if (!str) return 0;
+        const parsed = parseInt(str, 8);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+
+      function decodeTarString(bytes, start, maxLen) {
+        let end = start;
+        const limit = start + maxLen;
+        while (end < limit && bytes[end] !== 0) end++;
+        return new TextDecoder('utf-8').decode(bytes.subarray(start, end));
+      }
+
+      function decodeTarFileName(header) {
+        const name = decodeTarString(header, 0, 100);
+        const prefix = decodeTarString(header, 345, 155);
+        return prefix ? `${prefix}/${name}` : name;
+      }
+
+      function computeTarChecksum(header) {
+        for (let i = 148; i < 156; i++) header[i] = 32;
+        let sum = 0;
+        for (let i = 0; i < 512; i++) sum += header[i];
+        const oct = sum.toString(8).padStart(6, '0');
+        for (let i = 0; i < 6; i++) header[148 + i] = oct.charCodeAt(i);
+        header[154] = 0;
+        header[155] = 32;
+      }
+
+      function createPureUstarHeaderBlock(prefixField, nameField, fileSize, mtimeSec) {
+        const encoder = new TextEncoder();
+        const header = new Uint8Array(512);
+
+        const safeName = nameField.replace(/^\/+/, '');
+        const safePrefix = prefixField.replace(/^\/+|\/+$/g, '');
+
+        header.set(encoder.encode(safeName).subarray(0, 99), 0);
+        header.set(encoder.encode('0000644\0'), 100);
+        header.set(encoder.encode('0000000\0'), 108);
+        header.set(encoder.encode('0000000\0'), 116);
+
+        const clampedSize = Math.max(0, Math.min(fileSize, 0x1FFFFFFFF));
+        const sizeOct = clampedSize.toString(8).padStart(11, '0').slice(-11) + '\0';
+        header.set(encoder.encode(sizeOct), 124);
+
+        const nowSec = Math.floor(Date.now() / 1000);
+        const validMtime = (mtimeSec && mtimeSec > 946684800 && mtimeSec < 4102444800) ? mtimeSec : nowSec;
+        const mtimeOct = validMtime.toString(8).padStart(11, '0').slice(-11) + '\0';
+        header.set(encoder.encode(mtimeOct), 136);
+
+        header[156] = 0x30;
+        header.set(encoder.encode('ustar\0'), 257);
+        header.set(encoder.encode('00'), 263);
+        header.set(encoder.encode('root\0'), 265);
+        header.set(encoder.encode('root\0'), 297);
+
+        if (safePrefix) {
+          header.set(encoder.encode(safePrefix).subarray(0, 154), 345);
+        }
+
+        computeTarChecksum(header);
+        return header;
+      }
+
+      class TgzPartWriter {
+        constructor() {
+          this.cs = new CompressionStream('gzip');
+          this.writer = this.cs.writable.getWriter();
+          this.reader = this.cs.readable.getReader();
+          this.compressedChunks = [];
+          this.compressedSize = 0;
+          this.uncompressedSize = 0;
+          this.entryCount = 0;
+          this.usedPaths = new Set();
+          this.bytesSinceYield = 0;
+
+          this.pumpPromise = (async () => {
+            while (true) {
+              const { value, done } = await this.reader.read();
+              if (done) break;
+              if (value) {
+                this.compressedChunks.push(value);
+                this.compressedSize += value.byteLength;
+              }
+            }
+          })();
+        }
+
+        async write(chunk) {
+          if (!chunk || chunk.byteLength === 0) return;
+          this.uncompressedSize += chunk.byteLength;
+          this.bytesSinceYield += chunk.byteLength;
+          await this.writer.write(chunk);
+          if (this.bytesSinceYield >= 131072) {
+            this.bytesSinceYield = 0;
+            await new Promise((r) => setTimeout(r, 0));
+          }
+        }
+
+        async writeEntry(prefixField, nameField, mtimeSec, dataChunks, totalDataSize) {
+          const headerBlock = createPureUstarHeaderBlock(prefixField, nameField, totalDataSize, mtimeSec);
+          await this.write(headerBlock);
+          for (const dc of dataChunks) {
+            await this.write(dc);
+          }
+          const remainder = totalDataSize % 512;
+          if (remainder !== 0) {
+            await this.write(new Uint8Array(512 - remainder));
+          }
+          this.entryCount++;
+          await new Promise((r) => setTimeout(r, 0));
+        }
+
+        async finalize() {
+          await this.writer.write(new Uint8Array(1024));
+          this.uncompressedSize += 1024;
+          await this.writer.close();
+          await this.pumpPromise;
+          return {
+            blob: new Blob(this.compressedChunks, { type: 'application/gzip' }),
+            compressedSize: this.compressedSize,
+            uncompressedSize: this.uncompressedSize,
+            entryCount: this.entryCount
+          };
+        }
+      }
+
+      // =========================================================================
+      // STANDALONE ZIP BUILDER
+      // =========================================================================
+
       function buildStandaloneZip(partEntries) {
         const blobParts = [];
         const centralDirectoryParts = [];
         let currentOffset = 0;
+        let totalUncompressed = 0;
 
         for (const entry of partEntries) {
           const nameLen = entry.nameBytes.byteLength;
-
-          // Construct clean 30-byte Local File Header (cleared bit 3 data descriptor flag since sizes & CRC are known)
-          const cleanFlag = entry.bitFlag & ~0x0008;
           const localHeader = new ArrayBuffer(30);
           const lhView = new DataView(localHeader);
           lhView.setUint32(0, 0x04034b50, true);
           lhView.setUint16(4, 20, true);
-          lhView.setUint16(6, cleanFlag, true);
+          lhView.setUint16(6, 0, true);
           lhView.setUint16(8, entry.compressionMethod, true);
-          lhView.setUint16(10, entry.modTime, true);
-          lhView.setUint16(12, entry.modDate, true);
+          lhView.setUint16(10, entry.modTime || 0, true);
+          lhView.setUint16(12, entry.modDate || 0x5421, true);
           lhView.setUint32(14, entry.crc32, true);
           lhView.setUint32(18, entry.compSize, true);
           lhView.setUint32(22, entry.uncompSize, true);
@@ -759,16 +1152,15 @@
 
           blobParts.push(localHeader, entry.nameBytes, entry.dataBlob);
 
-          // Construct 46-byte Central Directory Header
           const cdHeader = new ArrayBuffer(46);
           const cdView = new DataView(cdHeader);
           cdView.setUint32(0, 0x02014b50, true);
-          cdView.setUint16(4, entry.versionMadeBy || 20, true);
+          cdView.setUint16(4, 20, true);
           cdView.setUint16(6, 20, true);
-          cdView.setUint16(8, cleanFlag, true);
+          cdView.setUint16(8, 0, true);
           cdView.setUint16(10, entry.compressionMethod, true);
-          cdView.setUint16(12, entry.modTime, true);
-          cdView.setUint16(14, entry.modDate, true);
+          cdView.setUint16(12, entry.modTime || 0, true);
+          cdView.setUint16(14, entry.modDate || 0x5421, true);
           cdView.setUint32(16, entry.crc32, true);
           cdView.setUint32(20, entry.compSize, true);
           cdView.setUint32(24, entry.uncompSize, true);
@@ -776,12 +1168,13 @@
           cdView.setUint16(30, 0, true);
           cdView.setUint16(32, 0, true);
           cdView.setUint16(34, 0, true);
-          cdView.setUint16(36, entry.internalAttr || 0, true);
-          cdView.setUint32(38, entry.externalAttr || 0, true);
+          cdView.setUint16(36, 0, true);
+          cdView.setUint32(38, 0, true);
           cdView.setUint32(42, currentOffset, true);
 
           centralDirectoryParts.push(cdHeader, entry.nameBytes);
           currentOffset += 30 + nameLen + entry.compSize;
+          totalUncompressed += entry.uncompSize;
         }
 
         const cdStartOffset = currentOffset;
@@ -803,129 +1196,583 @@
         eocdView.setUint16(20, 0, true);
 
         blobParts.push(eocd);
-        return new Blob(blobParts, { type: 'application/zip' });
+        const blob = new Blob(blobParts, { type: 'application/zip' });
+        return {
+          blob,
+          compressedSize: blob.size,
+          uncompressedSize: totalUncompressed,
+          entryCount: partEntries.length
+        };
       }
 
-      async function sliceSmartZip(file, maxBytes) {
-        setProgress(5, 'Reading ZIP Central Directory...');
-        const rawEntries = await parseZipCentralDirectory(file);
-        if (rawEntries.length === 0) {
-          throw new Error('The ZIP archive appears to contain no files.');
+      // =========================================================================
+      // ARCHIVE SPLITTING ENGINE (.tgz, .tar.gz, .tar, .zip)
+      // =========================================================================
+
+      function createProgressFileStream(file, onProgress) {
+        let offset = 0;
+        const chunkSize = 2 * 1024 * 1024;
+        return new ReadableStream({
+          async pull(controller) {
+            if (offset >= file.size) {
+              controller.close();
+              return;
+            }
+            const end = Math.min(offset + chunkSize, file.size);
+            const buf = await file.slice(offset, end).arrayBuffer();
+            offset = end;
+            if (onProgress) onProgress(offset, file.size);
+            controller.enqueue(new Uint8Array(buf));
+          }
+        });
+      }
+
+      async function processTarArchive(file, maxCompBytes, maxUncompBytes, maxFilesPerPart, outputMode, isGzipInput) {
+        if (typeof DecompressionStream === 'undefined' || typeof CompressionStream === 'undefined') {
+          throw new Error('Your browser does not support native Compression Streams. Please use a modern browser.');
         }
 
+        const stats = {
+          filesProcessed: 0,
+          symlinksConverted: 0,
+          nestedArchivesUnpacked: 0,
+          scriptsRenamed: 0,
+          binariesConvertedToStrings: 0,
+          nullByteFilesCleaned: 0,
+          emptyFilesConsolidated: 0,
+          duplicatePathsResolved: 0
+        };
+        const symlinksList = [];
+        const emptyFilesList = [];
         const encoder = new TextEncoder();
-        const preparedEntries = [];
-        const safetyOverhead = 256 * 1024; // Reserve 256 KB for ZIP headers/Central Directory per part
-        const maxPayloadPerPart = maxBytes - safetyOverhead;
+        const decoder = new TextDecoder('utf-8');
 
-        for (let i = 0; i < rawEntries.length; i++) {
-          const e = rawEntries[i];
-          if (i % 25 === 0) {
-            setProgress(5 + (i / rawEntries.length) * 55, `Inspecting entry ${i + 1} of ${rawEntries.length}...`);
+        const baseName = file.name.replace(/\.(tgz|tar\.gz|tar|zip)$/i, '');
+        const outputParts = [];
+
+        const safeCompLimit = Math.max(5 * 1024 * 1024, maxCompBytes - 4194304);
+        const safeUncompLimit = Math.max(20 * 1024 * 1024, maxUncompBytes - 6291456);
+        const maxSingleEntryUncomp = Math.min(45 * 1024 * 1024, safeUncompLimit - 4194304);
+
+        let uniqueCounter = 1;
+        let activeTgzWriter = outputMode === 'archive_tgz' ? new TgzPartWriter() : null;
+        let activeZipBucket = [];
+        let activeZipUsedPaths = new Set();
+        let activeZipCompBytes = 22;
+        let activeZipUncompBytes = 0;
+        let activeTxtChunks = [];
+        let activeTxtBytes = 0;
+        let activeTxtCount = 0;
+        const maxTxtPartBytes = Math.min(45 * 1024 * 1024, safeCompLimit);
+
+        async function flushCurrentPart() {
+          if (outputMode === 'archive_tgz') {
+            if (!activeTgzWriter || activeTgzWriter.entryCount === 0) return;
+            const res = await activeTgzWriter.finalize();
+            const partNum = String(outputParts.length + 1).padStart(2, '0');
+            outputParts.push({
+              name: `${baseName}_part${partNum}.tgz`,
+              blob: res.blob,
+              compressedSize: res.compressedSize,
+              uncompressedSize: res.uncompressedSize,
+              entryCount: res.entryCount,
+              formatLabel: 'TGZ'
+            });
+            activeTgzWriter = new TgzPartWriter();
+          } else if (outputMode === 'archive_zip') {
+            if (activeZipBucket.length === 0) return;
+            const res = buildStandaloneZip(activeZipBucket);
+            const partNum = String(outputParts.length + 1).padStart(2, '0');
+            outputParts.push({
+              name: `${baseName}_part${partNum}.zip`,
+              blob: res.blob,
+              compressedSize: res.compressedSize,
+              uncompressedSize: res.uncompressedSize,
+              entryCount: res.entryCount,
+              formatLabel: 'ZIP'
+            });
+            activeZipBucket = [];
+            activeZipUsedPaths = new Set();
+            activeZipCompBytes = 22;
+            activeZipUncompBytes = 0;
+          } else if (outputMode === 'archive_txt') {
+            if (activeTxtCount === 0) return;
+            const blob = new Blob(activeTxtChunks, { type: 'text/plain;charset=utf-8' });
+            const partNum = String(outputParts.length + 1).padStart(2, '0');
+            outputParts.push({
+              name: `${baseName}_part${partNum}.txt`,
+              blob,
+              compressedSize: blob.size,
+              uncompressedSize: blob.size,
+              entryCount: activeTxtCount,
+              formatLabel: 'TXT'
+            });
+            activeTxtChunks = [];
+            activeTxtBytes = 0;
+            activeTxtCount = 0;
           }
+        }
+
+        async function emitProcessedFile(rawPath, mtimeSec, dataChunks, totalSize, depth) {
+          let cleanPath = sanitizeArchivePath(rawPath);
+          if (!cleanPath) return;
+
+          if (totalSize === 0) {
+            emptyFilesList.push(cleanPath);
+            stats.emptyFilesConsolidated++;
+            return;
+          }
+
+          const firstChunk = dataChunks.length > 0 ? dataChunks[0] : null;
+          const magic = detectPayloadMagic(firstChunk);
+
+          if ((magic === 'gzip' || /\.(gz|tgz)$/i.test(cleanPath)) && totalSize <= 134217728 && depth <= 3) {
+            if (magic === 'gzip') {
+              const decomp = await safeDecompressGzipChunks(dataChunks);
+              if (decomp.totalSize > 0) {
+                stats.nestedArchivesUnpacked++;
+                const innerMagic = detectPayloadMagic(decomp.chunks[0]);
+                if (innerMagic === 'tar' || /\.(tgz|tar\.gz)$/i.test(cleanPath)) {
+                  const subPrefix = cleanPath.replace(/\.(tgz|tar\.gz|gz)$/i, '');
+                  const subBlob = new Blob(decomp.chunks);
+                  await parseTarStreamRecursive(subBlob.stream(), subPrefix, depth + 1);
+                  return;
+                } else {
+                  const strippedPath = cleanPath.replace(/\.gz$/i, '');
+                  await emitProcessedFile(strippedPath, mtimeSec, decomp.chunks, decomp.totalSize, depth + 1);
+                  return;
+                }
+              }
+            }
+          }
+
+          if ((magic === 'tar' || /\.tar$/i.test(cleanPath)) && totalSize >= 512 && totalSize <= 134217728 && depth <= 3) {
+            if (magic === 'tar') {
+              stats.nestedArchivesUnpacked++;
+              const subPrefix = cleanPath.replace(/\.tar$/i, '');
+              const subBlob = new Blob(dataChunks);
+              await parseTarStreamRecursive(subBlob.stream(), subPrefix, depth + 1);
+              return;
+            }
+          }
+
+          const analysis = analyzeAndSanitizePayload(dataChunks, totalSize);
+
+          if (analysis.isBinary || magic !== 'none' || /\.(exe|dll|so|ko|elf|pyc|pyo|db|sqlite|sqlite3|bdb|rrd|pcap|pcapng|cap|core|bz2|xz|zst|7z|rar|jar|whl)$/i.test(cleanPath)) {
+            const extracted = extractPrintableStringsFromBinary(cleanPath, totalSize, magic !== 'none' ? magic : 'binary', dataChunks);
+            stats.binariesConvertedToStrings++;
+            const stringsPath = cleanPath.replace(/\.(gz|tgz|tar|bz2|xz|zst|zip|jar|whl|exe|dll|so|pyc)$/i, '') + '.strings.txt';
+            await segmentAndWriteTextFile(stringsPath, mtimeSec, extracted.chunks, extracted.size);
+            return;
+          }
+
+          if (analysis.hadNulls) {
+            stats.nullByteFilesCleaned++;
+          }
+
+          const finalPath = ensureReadableExtension(cleanPath, stats);
+          await segmentAndWriteTextFile(finalPath, mtimeSec, analysis.sanitizedChunks, totalSize);
+        }
+
+        async function segmentAndWriteTextFile(finalPath, mtimeSec, dataChunks, totalSize) {
+          if (totalSize > maxSingleEntryUncomp) {
+            const fullBlob = new Blob(dataChunks);
+            const totalSegs = Math.ceil(totalSize / maxSingleEntryUncomp);
+            for (let s = 0; s < totalSegs; s++) {
+              const start = s * maxSingleEntryUncomp;
+              const end = Math.min(start + maxSingleEntryUncomp, totalSize);
+              const segBuf = new Uint8Array(await fullBlob.slice(start, end).arrayBuffer());
+              const extMatch = finalPath.match(/(\.[a-z0-9]+)$/i);
+              const ext = extMatch ? extMatch[1] : '.txt';
+              const stem = extMatch ? finalPath.slice(0, -ext.length) : finalPath;
+              const segName = `${stem}_seg${String(s + 1).padStart(2, '0')}of${String(totalSegs).padStart(2, '0')}${ext}`;
+              await writeLeafToActivePart(segName, mtimeSec, [segBuf], segBuf.byteLength);
+            }
+          } else {
+            await writeLeafToActivePart(finalPath, mtimeSec, dataChunks, totalSize);
+          }
+        }
+
+        function resolveUniquePathInSet(candidatePath, usedSet) {
+          let ustar = fitPathToUstar(candidatePath, uniqueCounter++);
+          if (!usedSet.has(ustar.finalPath.toLowerCase())) {
+            usedSet.add(ustar.finalPath.toLowerCase());
+            return ustar;
+          }
+          stats.duplicatePathsResolved++;
+          const extMatch = candidatePath.match(/(\.[a-z0-9]+)$/i);
+          const ext = extMatch ? extMatch[1] : '.txt';
+          const stem = extMatch ? candidatePath.slice(0, -ext.length) : candidatePath;
+          let dupIdx = 2;
+          while (true) {
+            const altCandidate = `${stem}_dup${dupIdx}${ext}`;
+            ustar = fitPathToUstar(altCandidate, uniqueCounter++);
+            if (!usedSet.has(ustar.finalPath.toLowerCase())) {
+              usedSet.add(ustar.finalPath.toLowerCase());
+              return ustar;
+            }
+            dupIdx++;
+          }
+        }
+
+        async function writeLeafToActivePart(finalPath, mtimeSec, dataChunks, totalSize) {
+          stats.filesProcessed++;
+
+          if (outputMode === 'archive_tgz') {
+            const entryTarFootprint = 512 + Math.ceil(totalSize / 512) * 512;
+            const estimatedCompAddition = Math.ceil(entryTarFootprint * 0.45);
+            const wouldExceedUncomp = activeTgzWriter.entryCount > 0 &&
+              (activeTgzWriter.uncompressedSize + entryTarFootprint > safeUncompLimit);
+            const wouldExceedComp = activeTgzWriter.entryCount > 0 &&
+              (activeTgzWriter.compressedSize + estimatedCompAddition > safeCompLimit);
+            const wouldExceedFileCount = activeTgzWriter.entryCount >= maxFilesPerPart;
+
+            if (wouldExceedUncomp || wouldExceedComp || wouldExceedFileCount) {
+              await flushCurrentPart();
+            }
+
+            const ustar = resolveUniquePathInSet(finalPath, activeTgzWriter.usedPaths);
+            await activeTgzWriter.writeEntry(ustar.prefix, ustar.name, mtimeSec, dataChunks, totalSize);
+          } else if (outputMode === 'archive_zip') {
+            const crc32 = computeChunksCrc32(dataChunks);
+            const rawBlob = new Blob(dataChunks);
+            const compStream = rawBlob.stream().pipeThrough(new CompressionStream('deflate-raw'));
+            const compBlob = await new Response(compStream).blob();
+
+            const wouldExceedComp = activeZipBucket.length > 0 &&
+              (activeZipCompBytes + compBlob.size + 256 > safeCompLimit);
+            const wouldExceedUncomp = activeZipBucket.length > 0 &&
+              (activeZipUncompBytes + totalSize > safeUncompLimit);
+            const wouldExceedFileCount = activeZipBucket.length >= maxFilesPerPart;
+
+            if (wouldExceedComp || wouldExceedUncomp || wouldExceedFileCount) {
+              await flushCurrentPart();
+            }
+
+            const ustar = resolveUniquePathInSet(finalPath, activeZipUsedPaths);
+            const nameBytes = encoder.encode(ustar.finalPath);
+            const zipEntryFootprint = 76 + nameBytes.byteLength * 2 + compBlob.size;
+
+            activeZipBucket.push({
+              compressionMethod: 8,
+              modTime: 0,
+              modDate: 0x5421,
+              crc32,
+              compSize: compBlob.size,
+              uncompSize: totalSize,
+              nameBytes,
+              fileName: ustar.finalPath,
+              dataBlob: compBlob
+            });
+            activeZipCompBytes += zipEntryFootprint;
+            activeZipUncompBytes += totalSize;
+          } else if (outputMode === 'archive_txt') {
+            const banner = encoder.encode(
+              `\n================================================================================\n` +
+              `FILE: ${finalPath} (${formatBytes(totalSize)})\n` +
+              `================================================================================\n`
+            );
+            const entryTotalTxt = banner.byteLength + totalSize + 2;
+            if (activeTxtCount > 0 && activeTxtBytes + entryTotalTxt > maxTxtPartBytes) {
+              await flushCurrentPart();
+            }
+            activeTxtChunks.push(banner, ...dataChunks, encoder.encode('\n'));
+            activeTxtBytes += entryTotalTxt;
+            activeTxtCount++;
+          }
+        }
+
+        async function parseTarStreamRecursive(readableStream, pathPrefix, depth) {
+          const tarReader = new StreamBlockReader(readableStream);
+          let gnuLongName = null;
+          let gnuLongLink = null;
+          let paxPath = null;
+          let paxLinkPath = null;
+          let paxSize = null;
+
+          try {
+            while (true) {
+              const headerBlock = await tarReader.readExact(512);
+              if (!headerBlock || headerBlock.byteLength < 512) break;
+              if (isZeroBlock(headerBlock)) continue;
+
+              const typeFlag = headerBlock[156];
+              let entrySize = paxSize !== null ? paxSize : parseTarNumber(headerBlock, 124, 12);
+              const mtimeSec = parseTarNumber(headerBlock, 136, 12);
+              paxSize = null;
+
+              if (typeFlag === 0x31 || typeFlag === 0x32 || typeFlag === 0x33 ||
+                  typeFlag === 0x34 || typeFlag === 0x35 || typeFlag === 0x36) {
+                entrySize = 0;
+              }
+
+              const paddedDataSize = Math.ceil(entrySize / 512) * 512;
+
+              if (typeFlag === 0x4C || typeFlag === 0x4B || typeFlag === 0x78 || typeFlag === 0x67) {
+                if (paddedDataSize > 0) {
+                  const metaData = await tarReader.readExact(paddedDataSize);
+                  if (metaData) {
+                    if (typeFlag === 0x4C) {
+                      gnuLongName = decodeTarString(metaData, 0, metaData.byteLength);
+                    } else if (typeFlag === 0x4B) {
+                      gnuLongLink = decodeTarString(metaData, 0, metaData.byteLength);
+                    } else if (typeFlag === 0x78) {
+                      const paxText = decoder.decode(metaData.subarray(0, entrySize));
+                      const sizeMatch = paxText.match(/(?:^|\n)\d+ size=(\d+)\n/);
+                      if (sizeMatch) paxSize = parseInt(sizeMatch[1], 10);
+                      const pathMatch = paxText.match(/(?:^|\n)\d+ path=([^\n]+)\n/);
+                      if (pathMatch) paxPath = pathMatch[1];
+                      const linkMatch = paxText.match(/(?:^|\n)\d+ linkpath=([^\n]+)\n/);
+                      if (linkMatch) paxLinkPath = linkMatch[1];
+                    }
+                  }
+                }
+                continue;
+              }
+
+              if (typeFlag === 0x53 && headerBlock[482] === 1) {
+                while (true) {
+                  const extBlock = await tarReader.readExact(512);
+                  if (!extBlock || extBlock[504] === 0) break;
+                }
+              }
+
+              const rawEntryName = paxPath || gnuLongName || decodeTarFileName(headerBlock);
+              const rawLinkTarget = paxLinkPath || gnuLongLink || decodeTarString(headerBlock, 157, 100);
+              gnuLongName = null;
+              gnuLongLink = null;
+              paxPath = null;
+              paxLinkPath = null;
+
+              if (rawEntryName.startsWith('PaxHeader/') || rawEntryName.includes('/PaxHeader/')) {
+                if (paddedDataSize > 0) await tarReader.readExact(paddedDataSize);
+                continue;
+              }
+
+              const combinedPath = pathPrefix ? `${pathPrefix}/${rawEntryName}` : rawEntryName;
+              const cleanPath = sanitizeArchivePath(combinedPath);
+
+              if (typeFlag === 0x31 || typeFlag === 0x32) {
+                const linkType = typeFlag === 0x32 ? 'SYMLINK' : 'HARDLINK';
+                symlinksList.push(`[${linkType}] ${cleanPath} -> ${rawLinkTarget}`);
+                stats.symlinksConverted++;
+                continue;
+              }
+
+              if (typeFlag === 0x33 || typeFlag === 0x34 || typeFlag === 0x35 || typeFlag === 0x36) {
+                if (paddedDataSize > 0) await tarReader.readExact(paddedDataSize);
+                continue;
+              }
+
+              const dataChunks = [];
+              let remaining = entrySize;
+              while (remaining > 0) {
+                const chunk = await tarReader.readExact(Math.min(remaining, 524288));
+                if (!chunk) break;
+                dataChunks.push(chunk);
+                remaining -= chunk.byteLength;
+              }
+              const padRem = paddedDataSize - entrySize;
+              if (padRem > 0) {
+                await tarReader.readExact(padRem);
+              }
+
+              if (cleanPath) {
+                await emitProcessedFile(cleanPath, mtimeSec, dataChunks, entrySize, depth);
+              }
+            }
+          } catch (streamErr) {
+            if (depth === 0) throw streamErr;
+          }
+        }
+
+        setProgress(1, 'Splitting archive...');
+        const rawFileStream = createProgressFileStream(file, (loaded, total) => {
+          const pct = Math.min(96, (loaded / total) * 94);
+          setProgress(pct, `Splitting archive (${formatBytes(loaded)} / ${formatBytes(total)})...`);
+        });
+
+        const topTarStream = isGzipInput
+          ? rawFileStream.pipeThrough(new DecompressionStream('gzip'))
+          : rawFileStream;
+
+        await parseTarStreamRecursive(topTarStream, '', 0);
+
+        const reportLines = [
+          '========================================================================',
+          'ARCHIVE MANIFEST',
+          '========================================================================',
+          `Source Archive: ${file.name} (${formatBytes(file.size)})`,
+          `Created: ${new Date().toISOString()}`,
+          `Files Packaged: ${stats.filesProcessed}`,
+          `Nested Archives Unpacked: ${stats.nestedArchivesUnpacked}`,
+          `Binary Files Converted to Text: ${stats.binariesConvertedToStrings}`,
+          `Symbolic & Hard Links Recorded: ${stats.symlinksConverted}`,
+          `Empty Files Recorded: ${stats.emptyFilesConsolidated}`,
+          ''
+        ];
+
+        if (symlinksList.length > 0) {
+          reportLines.push('--- SYMBOLIC & HARD LINKS ---');
+          for (const line of symlinksList) reportLines.push(line);
+          reportLines.push('');
+        }
+
+        if (emptyFilesList.length > 0) {
+          reportLines.push('--- EMPTY FILES (0 BYTES) ---');
+          for (const line of emptyFilesList) reportLines.push(line);
+          reportLines.push('');
+        }
+
+        const manifestBytes = encoder.encode(reportLines.join('\n'));
+        await writeLeafToActivePart(
+          'ARCHIVE_MANIFEST.txt',
+          Math.floor(Date.now() / 1000),
+          [manifestBytes],
+          manifestBytes.byteLength
+        );
+
+        await flushCurrentPart();
+        setProgress(100, 'Complete');
+
+        return { parts: outputParts };
+      }
+
+      async function sliceZipArchive(file, maxCompBytes, maxUncompBytes, maxFilesPerPart) {
+        const searchSize = Math.min(file.size, 65557);
+        const tailStart = file.size - searchSize;
+        const tailBuf = await file.slice(tailStart, file.size).arrayBuffer();
+        const tailView = new DataView(tailBuf);
+
+        let eocdPos = -1;
+        for (let i = tailBuf.byteLength - 22; i >= 0; i--) {
+          if (tailView.getUint32(i, true) === 0x06054b50) {
+            eocdPos = i;
+            break;
+          }
+        }
+        if (eocdPos === -1) {
+          throw new Error('Invalid ZIP file.');
+        }
+
+        let cdSize = tailView.getUint32(eocdPos + 12, true);
+        let cdOffset = tailView.getUint32(eocdPos + 16, true);
+
+        if (eocdPos >= 20 && tailView.getUint32(eocdPos - 20, true) === 0x07064b50) {
+          const zip64EocdOffset = Number(tailView.getBigUint64(eocdPos - 12, true));
+          const z64Buf = await file.slice(zip64EocdOffset, zip64EocdOffset + 56).arrayBuffer();
+          const z64View = new DataView(z64Buf);
+          if (z64View.getUint32(0, true) === 0x06064b50) {
+            cdSize = Number(z64View.getBigUint64(40, true));
+            cdOffset = Number(z64View.getBigUint64(48, true));
+          }
+        }
+
+        const cdBuf = await file.slice(cdOffset, cdOffset + cdSize).arrayBuffer();
+        const cdView = new DataView(cdBuf);
+        const cdBytes = new Uint8Array(cdBuf);
+        const decoder = new TextDecoder('utf-8');
+        const encoder = new TextEncoder();
+
+        const entries = [];
+        let ptr = 0;
+        while (ptr < cdBuf.byteLength) {
+          if (cdView.getUint32(ptr, true) !== 0x02014b50) break;
+          const bitFlag = cdView.getUint16(ptr + 8, true);
+          const compressionMethod = cdView.getUint16(ptr + 10, true);
+          const modTime = cdView.getUint16(ptr + 12, true);
+          const modDate = cdView.getUint16(ptr + 14, true);
+          const crc32 = cdView.getUint32(ptr + 16, true);
+          let compSize = cdView.getUint32(ptr + 20, true);
+          let uncompSize = cdView.getUint32(ptr + 24, true);
+          const nameLen = cdView.getUint16(ptr + 28, true);
+          const extraLen = cdView.getUint16(ptr + 30, true);
+          const commentLen = cdView.getUint16(ptr + 32, true);
+          let localHeaderOffset = cdView.getUint32(ptr + 42, true);
+
+          const rawName = decoder.decode(cdBytes.slice(ptr + 46, ptr + 46 + nameLen));
+          if (!rawName.endsWith('/')) {
+            entries.push({
+              bitFlag,
+              compressionMethod,
+              modTime,
+              modDate,
+              crc32,
+              compSize,
+              uncompSize,
+              rawName,
+              localHeaderOffset
+            });
+          }
+          ptr += 46 + nameLen + extraLen + commentLen;
+        }
+
+        const safeCompLimit = maxCompBytes - 1048576;
+        const safeUncompLimit = maxUncompBytes - 2097152;
+        const buckets = [];
+        let currentBucket = [];
+        let currentComp = 22;
+        let currentUncomp = 0;
+        const dummyStats = { scriptsRenamed: 0 };
+
+        for (let i = 0; i < entries.length; i++) {
+          const e = entries[i];
+          if (i % 25 === 0) {
+            setProgress((i / entries.length) * 90, `Splitting archive (${i + 1} / ${entries.length})...`);
+          }
+          let cleanPath = sanitizeArchivePath(e.rawName);
+          if (!cleanPath) continue;
+          if (/\.(exe|dll|msi|so|ko|elf)$/i.test(cleanPath)) continue;
+          cleanPath = ensureReadableExtension(cleanPath, dummyStats);
+          const nameBytes = encoder.encode(cleanPath);
 
           const lhBuf = await file.slice(e.localHeaderOffset, e.localHeaderOffset + 30).arrayBuffer();
           const lhView = new DataView(lhBuf);
-          if (lhView.getUint32(0, true) !== 0x04034b50) {
-            throw new Error(`Corrupt Local File Header at entry "${e.fileName}".`);
-          }
           const localNameLen = lhView.getUint16(26, true);
           const localExtraLen = lhView.getUint16(28, true);
           const dataStart = e.localHeaderOffset + 30 + localNameLen + localExtraLen;
           const dataBlob = file.slice(dataStart, dataStart + e.compSize);
 
-          const entryTotalFootprint = 76 + e.nameBytes.byteLength * 2 + e.compSize;
-
-          // If a single compressed entry is larger than the target part size, slice its payload into lossless chunks
-          if (entryTotalFootprint > maxPayloadPerPart) {
-            const chunkMax = maxPayloadPerPart - 1024;
-            const totalChunks = Math.ceil(dataBlob.size / chunkMax);
-            for (let c = 0; c < totalChunks; c++) {
-              const sliceStart = c * chunkMax;
-              const sliceEnd = Math.min(sliceStart + chunkMax, dataBlob.size);
-              const chunkBlob = dataBlob.slice(sliceStart, sliceEnd);
-              const partSuffix = `.part${String(c + 1).padStart(2, '0')}_of_${String(totalChunks).padStart(2, '0')}`;
-              const chunkName = e.fileName + partSuffix;
-              const chunkNameBytes = encoder.encode(chunkName);
-              const chunkCrc = await computeBlobCrc32(chunkBlob);
-
-              preparedEntries.push({
-                versionMadeBy: e.versionMadeBy,
-                versionNeeded: 20,
-                bitFlag: 0,
-                compressionMethod: 0, // Stored raw slice with verified CRC-32
-                modTime: e.modTime,
-                modDate: e.modDate,
-                crc32: chunkCrc,
-                compSize: chunkBlob.size,
-                uncompSize: chunkBlob.size,
-                nameBytes: chunkNameBytes,
-                fileName: chunkName,
-                internalAttr: e.internalAttr,
-                externalAttr: e.externalAttr,
-                dataBlob: chunkBlob
-              });
-            }
-          } else {
-            preparedEntries.push({
-              ...e,
-              dataBlob
-            });
-          }
-        }
-
-        // Pack entries into standalone ZIP parts under maxBytes
-        const buckets = [];
-        let currentBucket = [];
-        let currentBucketBytes = 22; // EOCD base size
-
-        for (const item of preparedEntries) {
-          const itemBytes = 76 + item.nameBytes.byteLength * 2 + item.compSize;
-          if (currentBucket.length > 0 && currentBucketBytes + itemBytes > maxBytes) {
+          const footprint = 76 + nameBytes.byteLength * 2 + e.compSize;
+          if (currentBucket.length > 0 &&
+              (currentComp + footprint > safeCompLimit ||
+               currentUncomp + e.uncompSize > safeUncompLimit ||
+               currentBucket.length >= maxFilesPerPart)) {
             buckets.push(currentBucket);
             currentBucket = [];
-            currentBucketBytes = 22;
+            currentComp = 22;
+            currentUncomp = 0;
           }
-          currentBucket.push(item);
-          currentBucketBytes += itemBytes;
+
+          currentBucket.push({
+            ...e,
+            nameBytes,
+            fileName: cleanPath,
+            dataBlob
+          });
+          currentComp += footprint;
+          currentUncomp += e.uncompSize;
         }
-        if (currentBucket.length > 0) {
-          buckets.push(currentBucket);
-        }
+
+        if (currentBucket.length > 0) buckets.push(currentBucket);
 
         const baseName = file.name.replace(/\.zip$/i, '');
         const outputParts = [];
-
         for (let b = 0; b < buckets.length; b++) {
-          setProgress(65 + ((b + 1) / buckets.length) * 35, `Building standalone ZIP part ${b + 1} of ${buckets.length}...`);
-          const zipBlob = buildStandaloneZip(buckets[b]);
+          const res = buildStandaloneZip(buckets[b]);
           const partNum = String(b + 1).padStart(2, '0');
           outputParts.push({
             name: `${baseName}_part${partNum}.zip`,
-            blob: zipBlob,
-            entryCount: buckets[b].length
+            blob: res.blob,
+            compressedSize: res.compressedSize,
+            uncompressedSize: res.uncompressedSize,
+            entryCount: res.entryCount,
+            formatLabel: 'ZIP'
           });
         }
 
-        return outputParts;
-      }
-
-      async function sliceRawBinary(file, maxBytes) {
-        const totalParts = Math.ceil(file.size / maxBytes);
-        const outputParts = [];
-        for (let i = 0; i < totalParts; i++) {
-          setProgress(((i + 1) / totalParts) * 100, `Slicing binary chunk ${i + 1} of ${totalParts}...`);
-          const start = i * maxBytes;
-          const end = Math.min(start + maxBytes, file.size);
-          const chunkBlob = file.slice(start, end, 'application/octet-stream');
-          const partNum = String(i + 1).padStart(2, '0');
-          outputParts.push({
-            name: `${file.name}.part${partNum}`,
-            blob: chunkBlob,
-            entryCount: null
-          });
-        }
-        return outputParts;
+        setProgress(100, 'Complete');
+        return { parts: outputParts };
       }
 
       sliceBtn.addEventListener('click', async () => {
@@ -935,30 +1782,43 @@
         resultsCard.style.display = 'none';
         sliceBtn.disabled = true;
 
-        const maxMb = parseInt(maxSizeInput.value, 10) || 60;
-        const maxBytes = maxMb * 1024 * 1024;
+        const maxCompMb = parseInt(maxSizeInput.value, 10) || 52;
+        const maxUncompMb = parseInt(maxUncompInput.value, 10) || 160;
+        const maxFilesPerPart = parseInt(maxFilesInput.value, 10) || 400;
+        const maxCompBytes = maxCompMb * 1024 * 1024;
+        const maxUncompBytes = maxUncompMb * 1024 * 1024;
+        const mode = splitMode.value;
 
         try {
-          let parts = [];
-          if (splitMode.value === 'smart') {
-            parts = await sliceSmartZip(currentFile, maxBytes);
+          let result;
+          if (currentFileFormat === 'tgz' || currentFileFormat === 'tar') {
+            const isGzip = currentFileFormat === 'tgz';
+            result = await processTarArchive(
+              currentFile,
+              maxCompBytes,
+              maxUncompBytes,
+              maxFilesPerPart,
+              mode,
+              isGzip
+            );
+          } else if (currentFileFormat === 'zip') {
+            result = await sliceZipArchive(currentFile, maxCompBytes, maxUncompBytes, maxFilesPerPart);
           } else {
-            parts = await sliceRawBinary(currentFile, maxBytes);
+            throw new Error('Unsupported file format. Please select a .tgz, .tar.gz, .tar, or .zip archive.');
           }
 
-          renderResults(parts, maxMb);
+          renderResults(result.parts);
         } catch (err) {
-          showError(err.message || 'An unexpected error occurred while slicing the archive.');
+          showError(err.message || 'An error occurred while splitting the archive.');
         } finally {
           sliceBtn.disabled = false;
         }
       });
 
-      function renderResults(parts, maxMb) {
+      function renderResults(parts) {
         partsList.innerHTML = '';
-        resultsTitle.textContent = `Ready for Glean Upload (${parts.length} ${parts.length === 1 ? 'Part' : 'Parts'})`;
-        resultsSubtitle.textContent =
-          `Every part is verified below ${maxMb} MB (Glean limit: 64 MB) with 100% original payload integrity.`;
+        resultsTitle.textContent = `Split Parts (${parts.length})`;
+        resultsSubtitle.textContent = 'Ready for download';
 
         parts.forEach((p, idx) => {
           const url = URL.createObjectURL(p.blob);
@@ -967,9 +1827,10 @@
           const row = document.createElement('div');
           row.className = 'part-item';
 
-          const metaText = p.entryCount !== null
-            ? `${formatBytes(p.blob.size)} • ${p.entryCount} internal ${p.entryCount === 1 ? 'entry' : 'entries'} • Valid standalone .zip`
-            : `${formatBytes(p.blob.size)} • Exact binary slice`;
+          const metaText =
+            `${formatBytes(p.compressedSize)} • ` +
+            `Uncompressed: ${formatBytes(p.uncompressedSize)} • ` +
+            `${p.entryCount.toLocaleString()} ${p.entryCount === 1 ? 'file' : 'files'}`;
 
           row.innerHTML = `
             <div class="part-info">
@@ -979,7 +1840,7 @@
               </div>
               <div class="part-sub">${metaText}</div>
             </div>
-            <a href="${url}" download="${p.name}" class="btn btn-secondary">Download Part ${idx + 1}</a>
+            <a href="${url}" download="${p.name}" class="btn btn-secondary">Download</a>
           `;
           partsList.appendChild(row);
         });
